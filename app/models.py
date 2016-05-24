@@ -17,6 +17,18 @@ class BaseModel():
         db.session.delete(resource)
         return db.session.commit()
 
+class Authenticator(BaseModel):
+    def authenticate(self):
+        pass 
+
+class BusinessAuthenticator(Authenticator, db.Model):
+    ___tablename = 'yiave_business_auth'
+
+    id = db.Column(db.Integer, primary_key = True)
+    business_id = db.Column(db.Integer)
+    telephone = db.Column(db.String(20), nullable = True)
+    name = db.Column(db.String(100), nullable = True)
+    password = db.Column(db.String, nullable = False)
 
 class Promotion(BaseModel, db.Model):
     __tablename__ = 'yiave_promotion'

@@ -9,7 +9,7 @@ from flask import render_template, redirect
 
 
 @api.route('/promotions', methods = ['GET'])
-def getPromotions():
+def get_promotions():
     page = request.args.get('page', 1, type = int)
 
     pagination = Promotion.query.paginate(
@@ -34,18 +34,18 @@ def getPromotions():
 
 
 @api.route('/promotions/<int:id>', methods = ['GET'])
-def getPromotion(id):
+def get_promotion(id):
     promotion = Promotion.query.get_or_404(id)
     return jsonify(promotion.toJson()) # string to json 
 
 @api.route('/promotions', methods = ['POST'])
-def setPromotion():
+def create_promotion():
    promotionJson = request.json
    Promotion.add(Promotion.fromJson(promotionJson))
    return json.dumps(promotionJson) # object to json  
 
 @api.route('/promotions/<int:id>', methods = ['PUT', 'PATCH'])
-def updatePromotion(id):
+def update_promotion(id):
     promotion = Promotion.query.get_or_404(id)
     description = request.json['description']
     promotion.setDescription(description)
