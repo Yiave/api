@@ -9,14 +9,17 @@ class Config:
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_RECORD_QUERIES = True
-    SQLALCHEMY_TRACK_MODIFICATIONS = True 
-    MAIL_SERVER = 'pop.exmail.qq.com'
-    MAIL_PORT = 995
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # mail config
+    MAIL_SERVER = 'smtp.exmail.qq.com'
+    MAIL_PORT = 465
     MAIL_USE_TLS = True
-    MAIL_USERNAME = "xuhuan@bukeu.com"
-    MAIL_PASSWORD = "1122aabbccdd"
-    YIAVE_MAIL_SUBJECT_PREFIX = '[ImmI]'
-    YIAVE_MAIL_SENDER = 'ImmI Admin <xuhuan@bukeu.com>'
+    MAIL_USERNAME = "admin@yiave.com"
+    MAIL_PASSWORD = "Terminal@207"
+    YIAVE_MAIL_SUBJECT_PREFIX = '[Yiave]'
+    YIAVE_MAIL_SENDER = 'Yiave Admin <admin@yiave.com>'
+
     YIAVE_ADMIN = "admin"
     YIAVE_POSTS_PER_PAGE = 20
     YIAVE_PROMOTIONS_PER_PAGE = 20
@@ -35,21 +38,21 @@ class DevelopmentConfig(Config):
 
     # MySQL SETTINGS
     mysql_db_username = 'root'
-    mysql_db_password = 'fcz5jiayou'
+    mysql_db_password = ''
     mysql_db_name = 'yiave'
     mysql_db_hostname = 'localhost'
 
     HOST = "127.0.0.1"
     PORT = 8088 
     SQLALCHEMY_ECHO = False
-    SECRET_KEY = "IMMI TOP SECRET"
+    SECRET_KEY = "YIAVE TOP SECRET"
 
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_ADDR}/{DB_NAME}".format(DB_USER=mysql_db_username,
                                                                                                DB_PASS=mysql_db_password,
                                                                                                DB_ADDR=mysql_db_hostname,
                                                                                                DB_NAME=mysql_db_name)
     # Email Server Configuration
-    MAIL_DEFAULT_SENDER = "immi@localhost"
+    MAIL_DEFAULT_SENDER = "yiave@localhost"
 
     PASSWORD_RESET_EMAIL = """
         Hi,

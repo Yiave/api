@@ -1,9 +1,7 @@
-from flask import jsonify, request, g, abort, url_for, current_app
-from .. import db
-from ..models import Notebook
+from flask import jsonify, request, url_for, current_app
+
 from . import api
-from .decorators import permission_required
-from .errors import forbidden
+from ..models import Notebook
 
 
 @api.route('/posts/')
