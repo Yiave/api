@@ -3,6 +3,7 @@ from . import api
 from flask import request, current_app, url_for, jsonify, json
 from flask import Response
 from . import errors 
+import app.utils as utils
 
 @api.before_app_request
 def before_request():
@@ -25,7 +26,6 @@ def get_businesses():
     if pagination.has_next:
         next = url_for('api.get_businesses', page = page + 1, _external = True)
 
-
     data = [b.toJson() for b in businesses]
     response =  Response(json.dumps(data))
     response.headers['Content-Type'] = "application/json"
@@ -41,11 +41,24 @@ def get_business(id):
     business = Business.query.get_or_404(id)
     return jsonify(business.toJson()) # string to json 
 
+# generate telephone authcode 
+@api.route('/businesses/generate_authcode', methods = ['GET'])
+def generate_authcode():
+    return jsonify({"authcode":"123456"})
+
+# check telephone number existance
+@api.route('/businesses/check/<string:tel>', methods = ['GET'])
+def check_telephone(tel):
+    business = BusinessAuthenticator.query.filter_by(telephone = tel).first()
+    if business:
+        return jsonify({"telephone_exist":True})
+    else:
+        return jsonify({"telephone_exist":False})
 
 @api.route('/businesses', methods = ['POST'])
 def create_business():
     businessJson = request.json
-    username = businessJson.get("name")
+    username = businessJson.get("username")
     telephone = businessJson.get("telephone")
     password = businessJson.get("password")
 
@@ -53,17 +66,14 @@ def create_business():
    
     # check existance 
     if business:
-        if business['username'] == username:
-            return errors.conflict("username exist")
+        return errors.conflict("username exist")
         
-        if business['telephone'] == telephone:
-            return errors.conflict("telephone exist")
-  
-    # send telephone auth number
-    #TODO 
+    business = BusinessAuthenticator.query.filter_by(telephone = telephone).first()
+    if business:
+        return errors.conflict("telephone exist")
 
     # add new business 
-    business = Business(username = username, telephone = telephone)
+    business = Business(telephone = telephone)
     Business.add(business) 
 
     # add to business auth 
@@ -71,17 +81,17 @@ def create_business():
                                           telephone = telephone, password = password)
     BusinessAuthenticator.add(business_auth)
     
-    response = Response(json.dumps(business), 201, mimetype = "application/json") # object to json 
-    response.headers.add("Location", url_for(get_business, id = business.id, external = True)) 
-    # 默认_external 为False，表示生成相对路径；为True 时，表示生成绝对路径
+    response = Response(json.dumps(business.toJson()), 201, mimetype = "application/json") # object to json 
+    # default_external is False means relative path, True means absolute path
+    response.headers.add("Location", url_for("api.get_business", id = business.id, external = True))
    
     return response 
 
-@api.route('/businesses/<int:id>', methods = ['PUT', 'PATCH'])
-def update_business(id):
-    business = Business.query.get_or_404(id)
-    newName = request.json['name']
-    business.setName(newName)
+@api.route('/businesses/<int:id>/password', methods = ['PUT', 'PATCH'])
+def update_password(id):
+    business = BusinessAuthenticator.query.get_or_404(id)
+    new_password = request.json['password']
+    business.setPassword(new_password)
     business.update()
     return jsonify(business.toJson()) 
 

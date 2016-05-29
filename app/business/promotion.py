@@ -6,7 +6,13 @@ from flask import Flask, make_response
 from functools import wraps
 import flask
 from flask import render_template, redirect
+from . import errors 
 
+
+@api.before_app_request
+def before_request():
+    if not request.headers.get("Authorization"):
+        return errors.unauthorized("Unauthorized API")
 
 @api.route('/promotions', methods = ['GET'])
 def get_promotions():

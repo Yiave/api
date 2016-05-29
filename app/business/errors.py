@@ -20,7 +20,7 @@ def forbidden(message):
     response.status_code = 403
     return response
 
-def confilict(message):
+def conflict(message):
     response = jsonify({'error': 'already exists', 'message': message})
     response.status_code = 409
     return response

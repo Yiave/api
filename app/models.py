@@ -22,13 +22,25 @@ class Authenticator(BaseModel):
         pass 
 
 class BusinessAuthenticator(Authenticator, db.Model):
-    ___tablename = 'yiave_business_auth'
+    __tablename__ = 'yiave_business_auth_local'
 
     id = db.Column(db.Integer, primary_key = True)
     business_id = db.Column(db.Integer)
-    telephone = db.Column(db.String(20), nullable = True)
-    name = db.Column(db.String(100), nullable = True)
+    telephone = db.Column(db.String, nullable = True)
+    username = db.Column(db.String(100), nullable = True)
     password = db.Column(db.String, nullable = False)
+    
+    def setPassword(self, password):
+        self.password = password 
+    
+    def toJson(self):
+        return {
+            "id": self.id,
+            "business_id": self.business_id,
+            "telephone": self.telephone,
+            "username": self.username,
+            "password": self.password
+        }
 
 class Promotion(BaseModel, db.Model):
     __tablename__ = 'yiave_promotion'
@@ -53,7 +65,7 @@ class Promotion(BaseModel, db.Model):
                 if isinstance(kwargs[arg], dict):
                     self.updateWithJson(kwargs[arg]) #TODO need to reorganize
                 else:
-                    self.__dic__[arg] = kwargs[arg]
+                    self.__dict__[arg] = kwargs[arg]
 
     def updateWithJson(self, prom):
         data = prom 
@@ -92,7 +104,7 @@ class Business(BaseModel, db.Model):
     __tablename__ = 'yiave_business'
 
     id = db.Column(db.Integer, primary_key = True)
-    telephone = db.Column(db.String(20), nullable = True)
+    telephone = db.Column(db.String, nullable = True)
     name = db.Column(db.String(100), nullable = True)
     address = db.Column(db.String(100), nullable = True)
     lon = db.Column(db.Float(7, 3), nullable = True)
@@ -114,7 +126,11 @@ class Business(BaseModel, db.Model):
                 if isinstance(kwargs[arg], dict):
                     self.updateWithJson(kwargs[arg]) #TODO need to reorganize
                 else:
-                    self.__dic__[arg] = kwargs[arg]
+                    print kwargs
+                    print self 
+                    print dir(self)
+                    print arg
+                    self.__dict__[arg] = kwargs[arg]
 
     def updateWithJson(self, prom):
         data = prom 
@@ -140,7 +156,7 @@ class Business(BaseModel, db.Model):
             "hours_open" : str(self.hours_open),
             "hours_close" : str(self.hours_close),
             "menber_level" : self.member_level,
-            "menber_due_time" : str(self.member_due_time.strftime('%Y-%m-%d %H:%M:%S')),
+            "menber_due_time" : self.member_due_time,
             "is_locked" : self.is_locked
         }
 
@@ -148,8 +164,6 @@ class Business(BaseModel, db.Model):
     def fromJson(data):
         return Business(data)
             
-    def setName(self, name):
-        self.name = name 
 
     def setLock(self, lock):
         self.is_locked = lock
