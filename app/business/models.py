@@ -1,5 +1,5 @@
-from datetime import datetime
-from . import db
+import app.utils as utils
+from .. import db
 
 
 class BaseModel():
@@ -74,8 +74,9 @@ class Promotion(BaseModel, db.Model):
             self.title = data["title"]
             self.image = data["image"]
             self.description = data["description"]
-            if data.has_key("publish_date"):
-                self.publish_date = data["publish_date"]
+#            if data.has_key("publish_date"):
+#                self.publish_date = data["publish_date"]
+            self.publish_date = utils.get_datetime() 
             self.start_time = data["start_time"]
             self.end_time = data["end_time"]
 

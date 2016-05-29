@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-api = Blueprint('api', __name__)
+business = Blueprint('business', __name__)
 
 from . import promotion, business

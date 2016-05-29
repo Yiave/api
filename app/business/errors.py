@@ -1,6 +1,6 @@
 from flask import jsonify
 from app.exceptions import ValidationError
-from . import api
+from . import business 
 
 
 def bad_request(message):
@@ -25,6 +25,6 @@ def conflict(message):
     response.status_code = 409
     return response
 
-@api.errorhandler(ValidationError)
+@business.errorhandler(ValidationError)
 def validation_error(e):
     return bad_request(e.args[0])

@@ -1,16 +1,16 @@
-from ..models import Business, BusinessAuthenticator 
-from . import api
+from .models import Business, BusinessAuthenticator 
+from . import business 
 from flask import request, current_app, url_for, jsonify, json
 from flask import Response
 from . import errors 
 import app.utils as utils
 
-@api.before_app_request
+@business.before_app_request
 def before_request():
     if not request.headers.get("Authorization"):
         return errors.unauthorized("Unauthorized API")
 
-@api.route('/businesses', methods = ['GET'])
+@business.route('/businesses', methods = ['GET'])
 def get_businesses():
     page = request.args.get('page', 1, type = int)
 
@@ -36,18 +36,18 @@ def get_businesses():
 
 
 
-@api.route('/businesses/<int:id>', methods = ['GET'])
+@business.route('/businesses/<int:id>', methods = ['GET'])
 def get_business(id):
     business = Business.query.get_or_404(id)
     return jsonify(business.toJson()) # string to json 
 
 # generate telephone authcode 
-@api.route('/businesses/generate_authcode', methods = ['GET'])
+@business.route('/businesses/generate_authcode', methods = ['GET'])
 def generate_authcode():
     return jsonify({"authcode":"123456"})
 
 # check telephone number existance
-@api.route('/businesses/check/<string:tel>', methods = ['GET'])
+@business.route('/businesses/check/<string:tel>', methods = ['GET'])
 def check_telephone(tel):
     business = BusinessAuthenticator.query.filter_by(telephone = tel).first()
     if business:
@@ -55,7 +55,7 @@ def check_telephone(tel):
     else:
         return jsonify({"telephone_exist":False})
 
-@api.route('/businesses', methods = ['POST'])
+@business.route('/businesses', methods = ['POST'])
 def create_business():
     businessJson = request.json
     username = businessJson.get("username")
@@ -87,7 +87,7 @@ def create_business():
    
     return response 
 
-@api.route('/businesses/<int:id>/password', methods = ['PUT', 'PATCH'])
+@business.route('/businesses/<int:id>/password', methods = ['PUT', 'PATCH'])
 def update_password(id):
     business = BusinessAuthenticator.query.get_or_404(id)
     new_password = request.json['password']
@@ -95,13 +95,13 @@ def update_password(id):
     business.update()
     return jsonify(business.toJson()) 
 
-#@api.route('/businesses/<int:id>', methods = ['DELETE'])
+#@business.route('/businesses/<int:id>', methods = ['DELETE'])
 #def delete_business():
 #    business = Business.query.get_or_404(id)
 #    ret = Business.delete(business)
 #    return json.dumps(ret)
 
-@api.route('/businesses/<int:id>', methods = ['DELETE'])
+@business.route('/businesses/<int:id>', methods = ['DELETE'])
 def delete_business(id):
     business = Business.query.get_or_404(id)
     is_locked = request.json['is_locked']
