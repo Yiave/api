@@ -21,6 +21,13 @@ class Authenticator(BaseModel):
     def authenticate(self):
         pass 
 
+class PromotionClothingcount(BaseModel, db.Model):
+    __tablename__ = 'yiave_promotion_clothingcount'
+
+class PromotionConsumecount(BaseModel, db.Model):
+    __tablename__ = 'yiave_promotion_consumecount'
+
+
 class BusinessAuthenticator(Authenticator, db.Model):
     __tablename__ = 'yiave_business_auth_local'
 
