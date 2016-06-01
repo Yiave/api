@@ -38,10 +38,15 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
     # MySQL SETTINGS
+<<<<<<< HEAD
+    mysql_db_username = 'yiave'
+    mysql_db_password = 'Yiave@207'
+=======
     mysql_db_username = 'root'
     mysql_db_password = ''
+>>>>>>> master
     mysql_db_name = 'yiave'
-    mysql_db_hostname = 'localhost'
+    mysql_db_hostname = '120.24.177.49'
 
     HOST = "0.0.0.0"
     PORT = 8088 

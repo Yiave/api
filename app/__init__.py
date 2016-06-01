@@ -14,6 +14,10 @@ def create_app(config_name):
     db.init_app(app)
     mail.init_app(app)
 
+<<<<<<< HEAD
+    from .business import business as business_blueprint
+    app.register_blueprint(business_blueprint, url_prefix='/v1')
+=======
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/v1')
 
@@ -22,5 +26,6 @@ def create_app(config_name):
 
     from .customer import customer as customer_blueprint
     app.register_blueprint(customer_blueprint, url_prefix='/v1')
+>>>>>>> master
 
     return app

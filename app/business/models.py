@@ -1,8 +1,13 @@
+<<<<<<< HEAD:app/business/models.py
+import app.utils as utils
+from .. import db
+=======
 from datetime import datetime
 import hashlib
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from . import db
+>>>>>>> master:app/models.py
 
 
 class BaseModel():
@@ -19,6 +24,37 @@ class BaseModel():
             db.session.delete(resource)
             return db.session.commit()
 
+class Authenticator(BaseModel):
+    def authenticate(self):
+        pass 
+
+class PromotionClothingcount(BaseModel, db.Model):
+    __tablename__ = 'yiave_promotion_clothingcount'
+
+class PromotionConsumecount(BaseModel, db.Model):
+    __tablename__ = 'yiave_promotion_consumecount'
+
+
+class BusinessAuthenticator(Authenticator, db.Model):
+    __tablename__ = 'yiave_business_auth_local'
+
+    id = db.Column(db.Integer, primary_key = True)
+    business_id = db.Column(db.Integer)
+    telephone = db.Column(db.String, nullable = True)
+    username = db.Column(db.String(100), nullable = True)
+    password = db.Column(db.String, nullable = False)
+    
+    def setPassword(self, password):
+        self.password = password 
+    
+    def toJson(self):
+        return {
+            "id": self.id,
+            "business_id": self.business_id,
+            "telephone": self.telephone,
+            "username": self.username,
+            "password": self.password
+        }
 
 class Promotion(BaseModel, db.Model):
     __tablename__ = 'yiave_promotion'
@@ -43,7 +79,7 @@ class Promotion(BaseModel, db.Model):
                 if isinstance(kwargs[arg], dict):
                     self.updateWithJson(kwargs[arg])  # TODO need to reorganize
                 else:
-                    self.__dic__[arg] = kwargs[arg]
+                    self.__dict__[arg] = kwargs[arg]
 
     def updateWithJson(self, prom):
         data = prom
@@ -52,8 +88,9 @@ class Promotion(BaseModel, db.Model):
             self.title = data["title"]
             self.image = data["image"]
             self.description = data["description"]
-            if data.has_key("publish_date"):
-                self.publish_date = data["publish_date"]
+#            if data.has_key("publish_date"):
+#                self.publish_date = data["publish_date"]
+            self.publish_date = utils.get_datetime() 
             self.start_time = data["start_time"]
             self.end_time = data["end_time"]
 
@@ -82,6 +119,18 @@ class Promotion(BaseModel, db.Model):
 class Business(BaseModel, db.Model):
     __tablename__ = 'yiave_business'
 
+<<<<<<< HEAD:app/business/models.py
+    id = db.Column(db.Integer, primary_key = True)
+    telephone = db.Column(db.String, nullable = True)
+    name = db.Column(db.String(100), nullable = True)
+    address = db.Column(db.String(100), nullable = True)
+    lon = db.Column(db.Float(7, 3), nullable = True)
+    lat = db.Column(db.Float(7, 3), nullable = True)
+    hours_open = db.Column(db.Time, nullable = True)
+    hours_close = db.Column(db.Time, nullable = True)
+    member_level = db.Column(db.Integer, nullable = True)
+    member_due_time = db.Column(db.DateTime, nullable = True)
+=======
     id = db.Column(db.Integer, primary_key=True)
     telephone = db.Column(db.String(20), nullable=True)
     name = db.Column(db.String(100), nullable=True)
@@ -92,6 +141,7 @@ class Business(BaseModel, db.Model):
     hours_close = db.Column(db.Time, nullable=True)
     member_level = db.Column(db.Integer, nullable=True)
     member_due_time = db.Column(db.DateTime, nullable=True)
+>>>>>>> master:app/models.py
     is_locked = db.Column(db.Boolean)
 
     def __init__(self, *args, **kwargs):
@@ -105,7 +155,11 @@ class Business(BaseModel, db.Model):
                 if isinstance(kwargs[arg], dict):
                     self.updateWithJson(kwargs[arg])  # TODO need to reorganize
                 else:
-                    self.__dic__[arg] = kwargs[arg]
+                    print kwargs
+                    print self 
+                    print dir(self)
+                    print arg
+                    self.__dict__[arg] = kwargs[arg]
 
     def updateWithJson(self, prom):
         data = prom
@@ -123,6 +177,18 @@ class Business(BaseModel, db.Model):
 
     def toJson(self):
         return {
+<<<<<<< HEAD:app/business/models.py
+            "telephone" : self.telephone,
+            "name" : self.name,
+            "address" : self.address,
+            "lon" : str(self.lon),
+            "lat" : str(self.lat),
+            "hours_open" : str(self.hours_open),
+            "hours_close" : str(self.hours_close),
+            "menber_level" : self.member_level,
+            "menber_due_time" : self.member_due_time,
+            "is_locked" : self.is_locked
+=======
             "telephone": self.telephone,
             "name": self.name,
             "address": self.address,
@@ -133,14 +199,19 @@ class Business(BaseModel, db.Model):
             "menber_level": self.member_level,
             "menber_due_time": str(self.member_due_time.strftime('%Y-%m-%d %H:%M:%S')),
             "is_locked": self.is_locked
+>>>>>>> master:app/models.py
         }
 
     @staticmethod
     def fromJson(data):
         return Business(data)
+<<<<<<< HEAD:app/business/models.py
+            
+=======
 
     def setName(self, name):
         self.name = name
+>>>>>>> master:app/models.py
 
     def setLock(self, lock):
         self.is_locked = lock
