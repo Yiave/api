@@ -20,10 +20,12 @@ def forbidden(message):
     response.status_code = 403
     return response
 
+
 def notfound(message):
     response = jsonify({'error': 'not found', 'message': message})
     response.status_code = 404
     return response
+
 
 def conflict(message):
     response = jsonify({'error': 'already exists', 'message': message})

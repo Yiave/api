@@ -14,9 +14,10 @@ class Config:
     # mail config
     MAIL_SERVER = 'smtp.exmail.qq.com'
     MAIL_PORT = 465
-    MAIL_USE_TLS = True
+    MAIL_USE_SSL = True
     MAIL_USERNAME = "admin@yiave.com"
     MAIL_PASSWORD = "Terminal@207"
+    MAIL_DEFAULT_SENDER = "admin@yiave.com"
     YIAVE_MAIL_SUBJECT_PREFIX = '[Yiave]'
     YIAVE_MAIL_SENDER = 'Yiave Admin <admin@yiave.com>'
 
@@ -42,7 +43,7 @@ class DevelopmentConfig(Config):
     mysql_db_name = 'yiave'
     mysql_db_hostname = 'localhost'
 
-    HOST = "127.0.0.1"
+    HOST = "0.0.0.0"
     PORT = 8088 
     SQLALCHEMY_ECHO = False
     SECRET_KEY = "YIAVE TOP SECRET"
@@ -52,8 +53,6 @@ class DevelopmentConfig(Config):
                                                                                                DB_ADDR=mysql_db_hostname,
                                                                                                DB_NAME=mysql_db_name)
     # Email Server Configuration
-    MAIL_DEFAULT_SENDER = "yiave@localhost"
-
     PASSWORD_RESET_EMAIL = """
         Hi,
 

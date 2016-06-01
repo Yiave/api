@@ -1,6 +1,6 @@
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.mail import Mail
+from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
 from config import config
 
 db = SQLAlchemy()
@@ -16,5 +16,11 @@ def create_app(config_name):
 
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/v1')
+
+    from .aaa import aaa as aaa_blueprint
+    app.register_blueprint(aaa_blueprint, url_prefix='/v1')
+
+    from .customer import customer as customer_blueprint
+    app.register_blueprint(customer_blueprint, url_prefix='/v1')
 
     return app
