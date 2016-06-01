@@ -1,0 +1,15 @@
+# /etc/systemd/system/myproject.service
+
+[Unit]
+Description=uWSGI instance to serve Yiave Api
+After=network.target
+
+[Service]
+User=nginx
+Group=nginx
+WorkingDirectory=/var/www/api/
+Environment="PATH=/var/www/api/"
+ExecStart=/var/www/api/bin/uwsgi --ini api.ini
+
+[Install]
+WantedBy=multi-user.target
