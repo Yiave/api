@@ -4,7 +4,7 @@ Welcome to Yiave!
 
 To confirm your account please click on the following link:
 
-{{ url_for('aaa.confirm', token=token, _external=True) }}
+{{  "http://yiave.com/account/confirm/" + token  }}
 
 Sincerely,
 

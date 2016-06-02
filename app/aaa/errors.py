@@ -1,6 +1,6 @@
 from flask import jsonify
 from app.exceptions import ValidationError
-from app.api_1_0 import api
+from . import aaa
 
 
 def bad_request(message):
@@ -22,6 +22,7 @@ def forbidden(message):
 
 
 def notfound(message):
+    print message
     response = jsonify({'error': 'not found', 'message': message})
     response.status_code = 404
     return response
@@ -33,6 +34,6 @@ def conflict(message):
     return response
 
 
-@api.errorhandler(ValidationError)
+@aaa.errorhandler(ValidationError)
 def validation_error(e):
     return bad_request(e.args[0])

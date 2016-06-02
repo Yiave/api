@@ -38,13 +38,13 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
     # MySQL SETTINGS
-    mysql_db_username = 'root'
-    mysql_db_password = ''
+    mysql_db_username = 'yiave'
+    mysql_db_password = 'Yiave@207'
     mysql_db_name = 'yiave'
     mysql_db_hostname = 'localhost'
 
     HOST = "0.0.0.0"
-    PORT = 8088 
+    PORT = 8088
     SQLALCHEMY_ECHO = False
     SECRET_KEY = "YIAVE TOP SECRET"
 

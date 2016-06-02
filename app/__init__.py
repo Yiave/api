@@ -14,9 +14,6 @@ def create_app(config_name):
     db.init_app(app)
     mail.init_app(app)
 
-    from .api_1_0 import api as api_1_0_blueprint
-    app.register_blueprint(api_1_0_blueprint, url_prefix='/v1')
-
     from .aaa import aaa as aaa_blueprint
     app.register_blueprint(aaa_blueprint, url_prefix='/v1')
 

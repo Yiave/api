@@ -4,6 +4,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from app import db
 from app.basemodel import BaseModel
+import app.utils as utils
 
 
 class Authenticator(BaseModel):
@@ -110,3 +111,7 @@ class Customer(BaseModel, db.Model):
     @staticmethod
     def fromJSON(data):
         return Customer(data)
+
+    def set_last_signin_date(self):
+        self.last_signin_date = utils.getDatetime()
+        self.update()
