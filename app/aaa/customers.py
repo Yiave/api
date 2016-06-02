@@ -10,18 +10,19 @@ from . import aaa
 
 @aaa.before_app_request
 def before_request():
-    # if not request.headers.get("Authorization"):
-    #     return unauthorized("Unauthorized API")
-    pass
+    if not request.headers.get("Authorization"):
+        return unauthorized("Unauthorized API")
+
 
 @aaa.after_app_request
 def after_request(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+    response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
     response.headers.add('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     response.headers.add('Content-Type', 'application/json')
     return response
+
 
 @aaa.route('/customers', methods=['POST'])
 def create_customer():
@@ -33,15 +34,15 @@ def create_customer():
 
     customer = LocalAuthenticator.query.filter(LocalAuthenticator.username == username).first()
     if customer:
-        return conflict("username exist")
+        return conflict("username " + username + " exist")
 
     customer = LocalAuthenticator.query.filter(LocalAuthenticator.email == email).first()
     if customer:
-        return conflict("email exist")
+        return conflict("email " + email + " already registed")
 
     # add to customer table
     customer = Customer(username=username, email=email, telephone=telephone,
-                        signup_date=utils.getDatetime())
+                        signup_date=utils.get_datetime())
     customer.add(customer)
 
     # add to local_auth table
@@ -54,17 +55,14 @@ def create_customer():
     send_email(customer.email, "Confirm Your Account", "confirm", user=customer, token=confirm_token)
 
     response = Response(json.dumps(customer.toJSON()), status=201, mimetype="application/json")
-    response.headers.add("Location", url_for("aaa.get_customer", id=customer.id, _external=True))
+    response.headers.add("Location", url_for("customer.get_customer", id=customer.id, _external=True))
 
     return response
 
 
-@aaa.route("/customers/confirm/<token>", methods=["GET"])
-def confirm(token):
-    data = request.get_json()
-    email = data.get("email")
-
-    customer = Customer.query.filter(Customer.email == email).first()
+@aaa.route("/customers/<int:id>/confirm/<string:token>", methods=["GET"])
+def confirm(id, token):
+    customer = Customer.query.get(id)
     if customer.set_confirmed(token):
         return jsonify(customer.toJSON())
     else:
@@ -78,18 +76,18 @@ def authenticate_customer():
     email = data.get("email")
     password = data.get("password")
 
-    customer = Customer.query.filter(Customer.username == username)
-    if password != password:
-        return forbidden("Wrong password")
+    customer = None
+    if username is not None:
+        customer = LocalAuthenticator.query.filter(LocalAuthenticator.username == username).first()
+        if password != customer.password:
+            return forbidden("Wrong password for " + username)
+    elif email is not None:
+        customer = LocalAuthenticator.query.filter(LocalAuthenticator.email == email).first()
+        if password != customer.password:
+            return forbidden("Wrong password for " + email)
 
-    return jsonify(customer.toJSON())
-
-
-@aaa.route("/customers/<int:id>", methods=["GET"])
-def get_customer(id):
-    customer = Customer.query.get(id)
-    if not customer:
-        return notfound("customer not found")
+    customer = Customer.query.get(customer.customer_id)
+    customer.set_last_signin_date()
 
     return jsonify(customer.toJSON())
 

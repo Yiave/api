@@ -44,7 +44,7 @@ class DevelopmentConfig(Config):
     mysql_db_hostname = 'localhost'
 
     HOST = "0.0.0.0"
-    PORT = 8088 
+    PORT = 8088
     SQLALCHEMY_ECHO = False
     SECRET_KEY = "YIAVE TOP SECRET"
 

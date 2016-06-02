@@ -1,9 +1,9 @@
 <p>Dear {{ user.username }},</p>
 <p>Welcome to <b>Yiave</b>!</p>
-<p>To confirm your account please <a href="{{ url_for('aaa.confirm', token=token, _external=True) }}">click here</a>.
+<p>To confirm your account please <a href="{{ 'http://yiave.com/account/confirm/' + token }}">click here</a>.
 </p>
 <p>Alternatively, you can paste the following link in your browser's address bar:</p>
-<p>{{ url_for('aaa.confirm', token=token, _external=True) }}</p>
+<p>{{ "http://yiave.com/account/confirm/" + token }}</p>
 <p>Sincerely,</p>
 <p>The Yiave Team</p>
 <p>
