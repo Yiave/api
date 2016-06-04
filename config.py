@@ -41,7 +41,7 @@ class DevelopmentConfig(Config):
     mysql_db_username = 'yiave'
     mysql_db_password = 'Yiave@207'
     mysql_db_name = 'yiave'
-    mysql_db_hostname = 'localhost'
+    mysql_db_hostname = '120.24.177.49'
 
     HOST = "0.0.0.0"
     PORT = 8088
