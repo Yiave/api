@@ -1,27 +1,10 @@
 # coding=utf-8
-
 from flask import jsonify, request, current_app, url_for, Response, json
 import app.utils as utils
 from .errors import bad_request, unauthorized, forbidden, notfound, conflict
 from app.customer.models import Customer, LocalAuthenticator
 from .email import send_email
 from . import aaa
-
-
-@aaa.before_app_request
-def before_request():
-    if not request.headers.get("Authorization"):
-        return unauthorized("Unauthorized API")
-
-
-@aaa.after_app_request
-def after_request(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-    response.headers.add('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add('Content-Type', 'application/json')
-    return response
 
 
 @aaa.route('/customers', methods=['POST'])
@@ -54,7 +37,7 @@ def create_customer():
     confirm_token = customer.get_confirm_token()
     send_email(customer.email, "Confirm Your Account", "confirm", user=customer, token=confirm_token)
 
-    response = Response(json.dumps(customer.toJSON()), status=201, mimetype="application/json")
+    response = Response(json.dumps(customer.to_json()), status=201, mimetype="application/json")
     response.headers.add("Location", url_for("customer.get_customer", id=customer.id, _external=True))
 
     return response
@@ -64,7 +47,7 @@ def create_customer():
 def confirm(id, token):
     customer = Customer.query.get(id)
     if customer.set_confirmed(token):
-        return jsonify(customer.toJSON())
+        return jsonify(customer.to_json())
     else:
         return unauthorized("The confirmation link is invalid or has expired.")
 
@@ -89,7 +72,7 @@ def authenticate_customer():
     customer = Customer.query.get(customer.customer_id)
     customer.set_last_signin_date()
 
-    return jsonify(customer.toJSON())
+    return jsonify(customer.to_json())
 
 
 if __name__ == '__main__':

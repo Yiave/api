@@ -24,4 +24,10 @@ def create_app(config_name):
     from .customer import customer as customer_blueprint
     app.register_blueprint(customer_blueprint, url_prefix='/v1')
 
+    from .promotion import promotion as promotion_blueprint
+    app.register_blueprint(promotion_blueprint, url_prefix='/v1')
+
+    from .cobuy import cobuy as cobuy_blueprint
+    app.register_blueprint(cobuy_blueprint, url_prefix='/v1')
+
     return app

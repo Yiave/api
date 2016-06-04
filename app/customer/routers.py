@@ -23,7 +23,7 @@ def get_customers():
     if pagination.has_next:
         next = url_for('customer.get_customers', page=page + 1, _external=True)
 
-    data = [b.toJson() for b in customers]
+    data = [b.to_json() for b in customers]
     response = Response(json.dumps(data))
     response.headers['Content-Type'] = "application/json"
     response.headers['X-Page-Pre'] = prev
@@ -39,7 +39,8 @@ def get_customer(id):
     if not customer:
         return notfound("customer not found")
 
-    return jsonify(customer.toJSON())
+    return jsonify(customer.to_json())
+
 
 @customer.route("/customers/<string:username>", methods=["GET"])
 def get_customer_by_username(username):
@@ -49,7 +50,7 @@ def get_customer_by_username(username):
     customer = Customer.query.filter(Customer.username == username).first()
     if not customer:
         return notfound("User " + username + "not found")
-    return jsonify(customer.toJSON())
+    return jsonify(customer.to_json())
 
 
 @customer.route("/customers/<string:email>", methods=["GET"])
@@ -57,7 +58,7 @@ def get_customer_by_email(email):
     customer = Customer.query.filter(Customer.email == email).first()
     if not customer:
         return notfound("User " + email + "not found")
-    return jsonify(customer.toJSON())
+    return jsonify(customer.to_json())
 
 
 @customer.route("/customers/<int:id>", methods=["PUT", "PATCH"])
@@ -67,14 +68,16 @@ def update_customer(id):
         return notfound("Customer not found")
 
     data = request.get_json()
-    nickname = data["nickname"]
-    realname = data["realname"]
+    if data.has_key("nickname"):
+        nickname = data["nickname"]
+        customer.nickname = nickname
+    if data.has_key("realname"):
+        realname = data["realname"]
+        customer.realname = realname
 
-    customer.nickname = nickname
-    customer.realname = realname
     customer.update()
 
-    return jsonify(customer.toJSON())
+    return jsonify(customer.to_json())
 
 
 if __name__ == '__main__':
