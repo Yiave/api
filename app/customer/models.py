@@ -48,6 +48,7 @@ class Customer(BaseModel, db.Model):
     email = db.Column(db.String(64), nullable=False, unique=True)
     telephone = db.Column(db.String(64), nullable=True, unique=True)
     nickname = db.Column(db.String(64), nullable=True)
+    gender = db.Column(db.String(2), nullable=True)
     avater_url = db.Column(db.String(64), nullable=True)
     realname = db.Column(db.String(64), nullable=True)
     signup_date = db.Column(db.String, nullable=True)
@@ -101,6 +102,7 @@ class Customer(BaseModel, db.Model):
             'email': self.email,
             'avater_url': self.avater_url,
             'nickname': self.nickname,
+            'gender': self.gender,
             'realname': self.realname,
             'signup_date': str(self.signup_date),
             'last_signin_date': str(self.last_signin_date),
