@@ -3,10 +3,10 @@
 import re
 from datetime import datetime
 
-def getDatetime():
-    return datetime.now().strftime("%Y-%m-%d %H:%M;%S")
+def get_datetime():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def isEmail(email):
+def is_email(email):
     if not re.match("[^@]+@[^@]+\.[^@]+", email):
         return False
     return True

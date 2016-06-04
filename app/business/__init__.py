@@ -1,4 +1,6 @@
 # coding=utf-8
+from flask import Blueprint
 
-if __name__ == '__main__':
-    pass
+business = Blueprint('business', __name__)
+
+from . import models, routers

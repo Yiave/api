@@ -94,7 +94,7 @@ class Customer(BaseModel, db.Model):
         self.update()
         return True
 
-    def toJSON(self):
+    def to_json(self):
         return {
             'id': self.id,
             'username': self.username,
@@ -111,9 +111,9 @@ class Customer(BaseModel, db.Model):
         }
 
     @staticmethod
-    def fromJSON(data):
+    def from_json(data):
         return Customer(data)
 
     def set_last_signin_date(self):
-        self.last_signin_date = utils.getDatetime()
+        self.last_signin_date = utils.get_datetime()
         self.update()
