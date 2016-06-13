@@ -47,7 +47,6 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
-
 # Translations
 *.mo
 *.pot
@@ -66,3 +65,7 @@ target/
 
 # project file
 .idea
+
+# special files
+config.py
+pip-selfcheck.json
