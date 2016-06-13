@@ -15,6 +15,8 @@ class Promotion(BaseModel, db.Model):
     business_id = db.Column(db.Integer)
     title = db.Column(db.String(45), nullable=False)
     image = db.Column(db.String(255))
+    promotion_count = db.Column(db.Integer)
+    type = db.Column(db.Integer)
     description = db.Column(db.String(300), nullable=False)
     publish_date = db.Column(db.DateTime, nullable=True)
     start_time = db.Column(db.DateTime, nullable=False)
@@ -39,8 +41,8 @@ class Promotion(BaseModel, db.Model):
             self.title = data["title"]
             self.image = data["image"]
             self.description = data["description"]
-            #            if data.has_key("publish_date"):
-            #                self.publish_date = data["publish_date"]
+            self.type = data["type"]
+            self.promotion_count = data["promotion_count"]
             self.publish_date = utils.get_datetime()
             self.start_time = data["start_time"]
             self.end_time = data["end_time"]
@@ -51,6 +53,8 @@ class Promotion(BaseModel, db.Model):
             "business_id": self.business_id,
             "title": self.title,
             "image": self.image,
+            "type": self.type,
+            "promotion_count": self.promotion_count,
             "description": self.description,
             "start_time": self.start_time,
             "end_time": self.end_time
