@@ -80,5 +80,24 @@ def update_customer(id):
     return jsonify(customer.to_json())
 
 
+@customer.route("/customers/<int:id>/password", methods=["PUT", "PATCH"])
+def update_customer_password(id):
+    customer = LocalAuthenticator.query.filter(LocalAuthenticator.customer_id == id).first()
+    if not customer:
+        return notfound("Customer not found")
+
+    data = request.get_json()
+    old_password = data["old_password"]
+    password = data["password"]
+
+    if old_password != customer.password:
+        return forbidden("old password is wrong.")
+
+    customer.password = password
+    customer.update()
+
+    return jsonify(customer.to_json())
+
+
 if __name__ == '__main__':
     pass

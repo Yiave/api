@@ -25,6 +25,15 @@ class LocalAuthenticator(Authenticator, db.Model):
     def authenticate(self):
         pass
 
+    def to_json(self):
+        return {
+            'id': self.id,
+            'customer_id': self.customer_id,
+            'username': self.username,
+            'email': self.email,
+            'telephone': self.telephone
+        }
+
 
 class OauthAuthenticator(Authenticator, db.Model):
     __tablename__ = 'yiave_customer_auth_oauth'

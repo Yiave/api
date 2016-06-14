@@ -62,10 +62,14 @@ def authenticate_customer():
     customer = None
     if username is not None:
         customer = LocalAuthenticator.query.filter(LocalAuthenticator.username == username).first()
+        if not customer:
+            return notfound("User " + username + " not found.")
         if password != customer.password:
             return forbidden("Wrong password for " + username)
     elif email is not None:
         customer = LocalAuthenticator.query.filter(LocalAuthenticator.email == email).first()
+        if not customer:
+            return notfound("User " + username + " not found.")
         if password != customer.password:
             return forbidden("Wrong password for " + email)
 
