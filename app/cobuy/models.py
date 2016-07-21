@@ -17,8 +17,8 @@ class Wish(BaseModel, db.Model):
     wish_time_start = db.Column(db.DateTime)
     wish_time_end = db.Column(db.DateTime)
     match_type = db.Column(db.Integer)
-    is_matched = db.Column(db.Boolean)
-    is_open = db.Column(db.Boolean)
+    is_matched = db.Column(db.Boolean, default=0)
+    is_open = db.Column(db.Boolean, default=1)
 
     def __init__(self, *args, **kwargs):
         super(Wish, self).__init__(**kwargs)
@@ -36,7 +36,10 @@ class Wish(BaseModel, db.Model):
 
     def init_with_json(self, data):
         if isinstance(data, dict):
+            self.customer_id = data['customer_id']
             self.wish_count = data['wish_count']
+            self.wish_time_start = data['wish_time_start']
+            self.wish_time_end = data['wish_time_end']
         return self
 
     def to_json(self):
@@ -64,13 +67,13 @@ class Wish(BaseModel, db.Model):
 class Cobuy(BaseModel, db.Model):
     __tablename__ = 'yiave_cobuy'
     id = db.Column(db.Integer, primary_key=True)
-    wish_id = db.Column(db.Integer)
+    wish_id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.Integer)
     promotion_id = db.Column(db.Integer)
     promotion_count = db.Column(db.Integer)
     match_type = db.Column(db.Integer)
     end_time = db.Column(db.DateTime)
-    is_match_completed = db.Column(db.Boolean)
+    is_match_completed = db.Column(db.Boolean, default=0)
     min_time = db.Column(db.DateTime)
     max_time = db.Column(db.DateTime)
 

@@ -25,7 +25,7 @@ def get_distance_by_clothing(min_time, max_time, wish_start_time, wish_end_time)
         distance = (wish_start_time - min_time) + (wish_end_time - min_time)
     elif wish_start_time < min_time < wish_start_time < max_time:  # 左包含
         distance = (wish_start_time - min_time) + (wish_end_time - min_time)
-    elif min_time < wish_start_time < wish_start_time < max_time:  # 完全包含
+    elif min_time <= wish_start_time < wish_end_time <= max_time:  # 完全包含
         distance = (wish_end_time - wish_start_time)
     elif min_time < wish_start_time < max_time < wish_end_time:  # 右包含
         distance = (max_time - wish_end_time) + (max_time - wish_start_time)
@@ -39,10 +39,10 @@ def get_distance_by_clothing(min_time, max_time, wish_start_time, wish_end_time)
 
 def recomendate_wish_by_clothing(wish):
     # 1. recomentdate via Wish Time
-    max_time = wish.wish_time_start
-    min_time = wish.wish_time_end
+    max_time = wish.wish_time_end
+    min_time = wish.wish_time_start
 
-    wishs = Wish.query.filter(Wish.promotion_id == id, Wish.is_matched == False, Wish.is_open == True).all()
+    wishs = Wish.query.filter(Wish.promotion_id == wish.promotion_id, Wish.is_matched == False, Wish.is_open == True).all()
 
     dataset = dict()
     for w in wishs:
@@ -51,21 +51,21 @@ def recomendate_wish_by_clothing(wish):
 
         distance = get_distance_by_clothing(min_time, max_time, wish_start_time, wish_end_time)
 
-        dataset[w.id] = distance
+        dataset[w] = distance
 
-    dataset.values().sort(reverse=True)
+    dataset = sorted(dataset.items(), key=lambda e:e[1], reverse=True)
 
-    # TODO: 2. recomendte via wish count
+    # TODO: 2. recomendate via wish count
 
-    return dataset
+    return [d[0] for d in dataset]
 
 
 def recomendate_cobuy_by_clothing(wish):
     # 1. recomentdate via Wish Time
-    max_time = wish.wish_time_start
-    min_time = wish.wish_time_end
+    max_time = wish.wish_time_end
+    min_time = wish.wish_time_start
 
-    cobuys = Cobuy.query.filter(Cobuy.promotion_id == id, Wish.is_matched == False, Wish.is_open == True).all()
+    cobuys = Cobuy.query.filter(Cobuy.promotion_id == wish.promotion_id, Wish.is_matched == False, Wish.is_open == True).all()
 
     dataset = dict()
     for w in cobuys:
@@ -74,80 +74,91 @@ def recomendate_cobuy_by_clothing(wish):
 
         distance = get_distance_by_clothing(min_time, max_time, wish_start_time, wish_end_time)
 
-        dataset[w.id] = distance
+        dataset[w] = distance
 
-    dataset.values().sort(reverse=True)
+    dataset = sorted(dataset.items(), key=lambda e:e[1], reverse=True)
 
-    # TODO: 2. recomendte via wish count
+    # TODO: 2. recomendate via wish count
 
-    return dataset
+    return [d[0] for d in dataset]
 
 
-@cobuy.route("/promotions/<int:id>/wish/clothing", methods=["POST"])
-def create_wish_by_clothing(id):
+@cobuy.route("/promotions/<int:id>/clothing/wishs/system_match", methods=["POST"])
+def create_system_match_wish_by_clothing(id):
     data = request.get_json()
     promotion_id = id
-    customer_id = data["customer_id"]
-    wish_count = data["wish_count"]
-    wish_time_start = data["wish_time_start"]
-    wish_time_end = data["wish_time_end"]
-    match_type = data["match_type"]
+
+    # add wish
+    wish = Wish.from_json(data)
+    wish.promotion_id = promotion_id
+    wish.match_type = 0
+    wish.is_open = True
+    wish.add(wish)
+
+    # recomendate data
+    wish_data = recomendate_wish_by_clothing(wish)
+    cobuy_data = recomendate_cobuy_by_clothing(wish)
+
+    return jsonify({"wishs": [w.to_json() for w in wish_data], "cobuys": [c.to_json() for c in cobuy_data]})
+
+
+@cobuy.route("/promotions/<int:id>/clothing/wishs/user_create", methods=["POST"])
+def create_user_create_wish_by_clothing(id):
+    data = request.get_json()
+    promotion_id = id
 
     promotion = Promotion.query.get(id)
 
     # add wish
     wish = Wish.from_json(data)
     wish.promotion_id = promotion_id
+    wish.match_type = 1
+    wish.is_open = False
+    wish.add(wish)
 
-    if match_type == 0:  # System Match
-        # TODO: system match backend function
-        wish.add(wish)
+    # recomendate data
+    cobuy = Cobuy(wish_id=wish.id, promotion_id=wish.promotion_id, customer_id=wish.customer_id,
+                  promotion_count=promotion.promotion_count,
+                  match_type=wish.match_type, end_time=promotion.end_time,
+                  min_time=wish.wish_time_start, max_time=wish.wish_time_end)
+    cobuy.add(cobuy)
+    return jsonify(cobuy.to_json())
 
-        wish_data = recomendate_wish_by_clothing(wish)
-        coby_data = recomendate_cobuy_by_clothing(wish)
-        return jsonify({"wish": wish_data, "cobuy": coby_data})
 
-    elif match_type == 1:  # User Create Match
-        wish.is_open = False
-        wish.add(wish)
+@cobuy.route("/promotions/<int:id>/clothing/wishs/user_join", methods=["POST"])
+def create_user_join_wish_by_clothing(id):
+    data = request.get_json()
+    promotion_id = id
+    cobuy_id = data["cobuy_id"]
+    customer_id = data["customer_id"]
+    wish_count = data["wish_count"]
 
-        cobuy = Cobuy(wish_id=wish.id, promotion_id=wish.promotion_id, customer_id=wish.customer_id,
-                      match_type=wish.match_type, end_time=promotion.end_time, min_time=wish_time_start,
-                      max_time=wish_time_end)
-        cobuy.add(cobuy)
-        return jsonify(cobuy.to_json())
+    cobuy = Cobuy.query.filter(Cobuy.id==cobuy_id).first()
+    if not cobuy:
+        return errors.notfound("Cobuy " + str(cobuy_id) + " not found.")
+
+    promotion = Promotion.query.get(id)
+
+    # add wish
+    wish_time_start = cobuy.min_time
+    wish_time_end = cobuy.max_time
+    wish = Wish(promotion_id=promotion_id, customer_id=customer_id, wish_count=wish_count,
+                match_type=2, wish_time_start=wish_time_start, wish_time_end=wish_time_end)
+    wish.is_open = False
+    wish.add(wish)
+
+    # recomendate data
+    cobuy = Cobuy(id=cobuy_id, wish_id=wish.id, promotion_id=wish.promotion_id, customer_id=wish.customer_id,
+                  promotion_count=promotion.promotion_count,
+                  match_type=wish.match_type, end_time=promotion.end_time,
+                  min_time=wish_time_start, max_time=wish_time_end)
+    cobuy.add(cobuy)
+    return jsonify(cobuy.to_json())
 
 
 @cobuy.route("/cobuy/recomwish/system/clothing", methods=["POST"])
 def create_clothing_cobuy_by_system_recomwish():
     pass
-
-
-@cobuy.route("/cobuy/<int:id>/userjoin", methods=['POST'])
-def create_cobuy_by_userjoin(id):
-    data = request.get_json()
-    customer_id = data["customer_id"]
-    wish_count = data["wish_count"]
-    match_type = 2
-
-    cobuy = Cobuy.query.get(id)
-    if not cobuy:
-        return errors.notfound("Cobuy " + str(id) + " not found.")
-
-    # add wish
-    wish_time_start = cobuy.min_time
-    wish_time_end = cobuy.max_time
-    wish = Wish(promotion_id=cobuy.promotion_id, customer_id=customer_id, wish_count=wish_count,
-                match_type=match_type, wish_time_start=wish_time_start, wish_time_end=wish_time_end)
-    wish.add(wish)
-
-    # add cobuy
-    cobuy = Cobuy(wish_id=wish.id, promotion_id=wish.promotion_id, customer_id=wish.customer_id,
-                  match_type=wish.match_type, end_time=cobuy.end_time, min_time=wish_time_start,
-                  max_time=wish_time_end)
-    cobuy.add(cobuy)
-
-    return jsonify(cobuy.to_json())
 
 
 @cobuy.route("/wish/<int:id>/open", methods=["PUT", "PATCH"])
