@@ -65,12 +65,12 @@ def recomendate_cobuy_by_clothing(wish):
     max_time = wish.wish_time_end
     min_time = wish.wish_time_start
 
-    cobuys = Cobuy.query.filter(Cobuy.promotion_id == wish.promotion_id, Wish.is_matched == False, Wish.is_open == True).all()
+    cobuys = Cobuy.query.filter(Cobuy.promotion_id == wish.promotion_id, Cobuy.is_match_completed == False).all()
 
     dataset = dict()
     for w in cobuys:
-        wish_start_time = w.wish_time_start
-        wish_end_time = w.wish_time_end
+        wish_start_time = w.min_time
+        wish_end_time = w.max_time
 
         distance = get_distance_by_clothing(min_time, max_time, wish_start_time, wish_end_time)
 
