@@ -19,17 +19,17 @@ def get_distance_by_clothing(min_time, max_time, wish_start_time, wish_end_time)
     :param wish_start_time 测试/待匹配数据集
     :param wish_end_time 测试/待匹配数据集
     '''
-    distance = None
+    distance = wish_end_time - wish_start_time
 
-    if wish_end_time < min_time:  # 完全左
+    if wish_end_time <= min_time:  # 完全左
         distance = (wish_start_time - min_time) + (wish_end_time - min_time)
-    elif wish_start_time < min_time < wish_start_time < max_time:  # 左包含
+    elif wish_start_time < min_time < wish_start_time <= max_time:  # 左包含
         distance = (wish_start_time - min_time) + (wish_end_time - min_time)
     elif min_time <= wish_start_time < wish_end_time <= max_time:  # 完全包含
         distance = (wish_end_time - wish_start_time)
-    elif min_time < wish_start_time < max_time < wish_end_time:  # 右包含
+    elif min_time <= wish_start_time < max_time < wish_end_time:  # 右包含
         distance = (max_time - wish_end_time) + (max_time - wish_start_time)
-    elif max_time < wish_start_time:  # 完全右
+    elif max_time <= wish_start_time:  # 完全右
         distance = (max_time - wish_end_time) + (max_time - wish_start_time)
     elif wish_start_time < min_time < max_time < wish_end_time:  # 完全外包含
         distance = (min_time - wish_start_time) + (max_time - wish_end_time)
