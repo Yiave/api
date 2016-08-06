@@ -42,12 +42,14 @@ def get_promotion(id):
         return errors.notfound("Promotion not found")
     return jsonify(promotion.to_json())
 
+
 @promotion.route('/promotions/business/<int:id>', methods=['GET'])
 def get_promotions_by_business(id):
     promotions = Promotion.query.filter(Promotion.business_id == id).all()
     if not promotions:
         return errors.notfound("Promotion for Business " + str(id) + " not found")
     return json.dumps([p.to_json() for p in promotions])
+
 
 @promotion.route('/promotions', methods=['POST'])
 def create_promotion():
