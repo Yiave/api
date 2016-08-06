@@ -56,8 +56,9 @@ class Promotion(BaseModel, db.Model):
             "type": self.type,
             "promotion_count": self.promotion_count,
             "description": self.description,
-            "start_time": self.start_time,
-            "end_time": self.end_time
+            "start_time": str(self.start_time),
+            "end_time": str(self.end_time),
+            "publish_date": str(self.publish_date)
         }
 
     @staticmethod
