@@ -19,7 +19,9 @@ def get_distance_by_clothing(min_time, max_time, wish_start_time, wish_end_time)
     :param wish_start_time 测试/待匹配数据集
     :param wish_end_time 测试/待匹配数据集
     '''
-    distance = wish_end_time - wish_start_time
+    distance = None
+    if wish_start_time is not None and wish_end_time is not None:
+        distance = wish_end_time - wish_start_time
 
     if wish_end_time <= min_time:  # 完全左
         distance = (wish_start_time - min_time) + (wish_end_time - min_time)
@@ -47,8 +49,12 @@ def recomendate_wish_by_clothing(wish):
 
     dataset = dict()
     for w in wishs:
+        if w is None:
+            continue
         wish_start_time = w.wish_time_start
         wish_end_time = w.wish_time_end
+        if wish_start_time is None or wish_end_time is None:
+            continue
 
         distance = get_distance_by_clothing(min_time, max_time, wish_start_time, wish_end_time)
 
@@ -102,7 +108,9 @@ def create_system_match_wish_by_clothing(id):
     wish_data = recomendate_wish_by_clothing(wish)
     cobuy_data = recomendate_cobuy_by_clothing(wish)
 
-    return jsonify({"wishs": [w.to_json() for w in wish_data], "cobuys": [c.to_json() for c in cobuy_data]})
+    return jsonify({"w": wish.to_json(),
+                    "wishs": [w.to_json() for w in wish_data],
+                    "cobuys": [c.to_json() for c in cobuy_data]})
 
 
 @cobuy.route("/promotions/<int:id>/clothing/wishs/user_create", methods=["POST"])
