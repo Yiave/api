@@ -49,7 +49,7 @@ def recomendate_wish_by_clothing(wish):
 
     dataset = dict()
     for w in wishs:
-        if w is None:
+        if w is None or w.id == wish.id:
             continue
         wish_start_time = w.wish_time_start
         wish_end_time = w.wish_time_end
