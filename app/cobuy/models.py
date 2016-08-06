@@ -36,6 +36,10 @@ class Wish(BaseModel, db.Model):
 
     def init_with_json(self, data):
         if isinstance(data, dict):
+            if data.has_key("id"):
+                self.id = data["id"]
+            if data.has_key("match_type"):
+                self.match_type = data["match_type"]
             self.customer_id = data['customer_id']
             self.wish_count = data['wish_count']
             self.wish_time_start = data['wish_time_start']
